@@ -1,0 +1,3 @@
+../AMPS-5.3.3.30-Release-Linux/bin/ampServer minimal.xml
+
+sudo apt install net-tools
