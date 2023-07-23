@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Message {
+public class OrderMessage {
 
-    public static final long NUM_WARMUP_MESSAGES = 10000;
     public static final long NUM_MESSAGES = 1000000;
     private String orderId;
     private String price;
@@ -20,7 +19,7 @@ public class Message {
 
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Message(String orderId, String price, String side, String currency, String symbol) {
+    public OrderMessage(String orderId, String price, String side, String currency, String symbol) {
         this.orderId = orderId;
         this.price = price;
         this.side = side;
@@ -50,25 +49,22 @@ public class Message {
 
         for (long i = 1; i <= NUM_MESSAGES; ++i) {
             int rz = rand.nextInt(3) + 1;
-            Message msg = null;
+            OrderMessage msg = null;
             switch (rz) {
                 case 1:
-                    msg = new Message(String.valueOf(i),p1,sd1,c1,s1 );
+                    msg = new OrderMessage(String.valueOf(i),p1,sd1,c1,s1 );
                     break;
                 case 2:
-                    msg = new Message(String.valueOf(i),p2,sd2,c2,s2 );
+                    msg = new OrderMessage(String.valueOf(i),p2,sd2,c2,s2 );
                     break;
                 case 3:
-                    msg = new Message(String.valueOf(i),p3,sd3,c3,s3 );
+                    msg = new OrderMessage(String.valueOf(i),p3,sd3,c3,s3 );
                     break;
                 default:
                     break;
             }
             String jsonString = objectMapper.writeValueAsString(msg);
             messageList.add(jsonString);
-            if ( i <= NUM_WARMUP_MESSAGES ) {
-                warmupMessageList.add(jsonString);
-            }
         }
 
     }
@@ -111,5 +107,16 @@ public class Message {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "orderId='" + orderId + '\'' +
+                ", price='" + price + '\'' +
+                ", side='" + side + '\'' +
+                ", currency='" + currency + '\'' +
+                ", symbol='" + symbol + '\'' +
+                '}';
     }
 }
