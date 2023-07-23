@@ -20,7 +20,6 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 4. Start Kafka Brokers:
 
 Open a new terminal, navigate to your Kafka directory, and run the following command to start a Kafka broker:
-bash
 
 bin/kafka-server-start.sh config/server.properties
 
