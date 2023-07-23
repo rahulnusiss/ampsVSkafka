@@ -1,3 +1,57 @@
+AMPS:
+To Download AMPS server(Amps engine), register your email in 60east. A link will be sent to your email to use evaluate version of AMPS.
+Download amps engine using the link received in email.
+Extract:
+$ tar -zxf AMPS-5.3.3.30-Release-Linux.tar.gz
+
+Create minimal.xml config:
+$ ./AMPS-5.3.3.30-Release-Linux/bin/ampServer --sample-config > minimal.xml
+
+Run AMPS server:
 ../AMPS-5.3.3.30-Release-Linux/bin/ampServer minimal.xml
 
-sudo apt install net-tools
+KAFKA:
+Download Kafka binary not source:
+(https://kafka.apache.org/downloads)
+
+Run kafka server on wsl ubuntu:
+cd <kafka extracted dir>
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+bin/kafka-server-start.sh config/server.properties
+
+bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic jsonKafka
+
+Fix wsl:
+172.x
+Find the address of your WSL 2 network:
+
+$ ip addr | grep "eth0"
+172.x.y.z
+
+Use this in your broker (server.properties)
+listeners=PLAINTEXT://172.x.y.z:9092
+
+Same in publisher and subscriber, for your bootstrap address:
+172.x.y.z:9092
+
+
+Running kafka on windows
+https://www.geeksforgeeks.org/how-to-install-and-run-apache-kafka-on-windows/
+
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+.\bin\windows\kafka-server-start.bat .\config\server.properties
+
+Create topic: On cmd windows
+kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic jsonKafka
+
+
+When kafka subscriber connects should see this group name
+[2023-07-23 19:02:25,559] INFO [GroupCoordinator 0]: Member consumer-test-consumer-group-1-bc4d3066-74a1-4579-bda5-a0243c4057be in group test-consumer-group has failed, removing it from the group (kafka.coordinator.group.GroupCoordinator)
+[2023-07-23 19:02:25,564] INFO [GroupCoordinator 0]: Preparing to rebalance group test-consumer-group in state PreparingRebalance with old generation 3 (__consumer_offsets-31) (reason: removing member consumer-test-consumer-group-1-bc4d3066-74a1-4579-bda5-a0243c4057be on heartbeat expiration) (kafka.coordinator.group.GroupCoordinator)
+[2023-07-23 19:02:25,567] INFO [GroupCoordinator 0]: Group test-consumer-group with generation 4 is now empty (__consumer_offsets-31) (kafka.coordinator.group.GroupCoordinator)
+
+[2023-07-23 19:03:10,990] INFO [GroupCoordinator 0]: Dynamic member with unknown member id joins group test-consumer-group in Empty state. Created a new member id consumer-test-consumer-group-1-64a00717-b3b7-42e0-b6c9-9b062ea48f5d and request the member to rejoin with this id. (kafka.coordinator.group.GroupCoordinator)
+[2023-07-23 19:03:10,999] INFO [GroupCoordinator 0]: Preparing to rebalance group test-consumer-group in state PreparingRebalance with old generation 4 (__consumer_offsets-31) (reason: Adding new member consumer-test-consumer-group-1-64a00717-b3b7-42e0-b6c9-9b062ea48f5d with group instance id None; client reason: not provided) (kafka.coordinator.group.GroupCoordinator)
+[2023-07-23 19:03:11,006] INFO [GroupCoordinator 0]: Stabilized group test-consumer-group generation 5 (__consumer_offsets-31) with 1 members (kafka.coordinator.group.GroupCoordinator)
+[2023-07-23 19:03:11,028] INFO [GroupCoordinator 0]: Assignment received from leader consumer-test-consumer-group-1-64a00717-b3b7-42e0-b6c9-9b062ea48f5d for group test-consumer-group for generation 5. The group has 1 members, 0 of which are static. (kafka.coordinator.group.GroupCoordinator)
