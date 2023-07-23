@@ -28,12 +28,24 @@ public class AMPSOrderSubscriberTest {
             MessageStream ms = c.subscribe("messages");
 
             int count = 0;
+            int prevCount = 0;
+
+            long prevTime = 0;
+            long currTime = System.currentTimeMillis();
 
             while (ms.hasNext()) {
+                long runningTime = System.currentTimeMillis();
+                if ( runningTime - currTime > TimeCheck.RATE_TIME_WINDOW) {
+                    prevTime = currTime;
+                    currTime = runningTime;
+                    System.out.println("No of messages in this second : " + count);
+                    count = 0;
+                }
                 Message m = ms.next();
                 String data = m.getData();
                 messageList.add(data);
-                System.out.println("Sub : " + data);
+                //System.out.println("Sub : " + data);
+                count ++;
             }
 
             for (String msgJson : messageList) {
