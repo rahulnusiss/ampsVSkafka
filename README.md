@@ -1,4 +1,4 @@
-# ampsVSkafka
+# AMPS VS KAFKA
 comparison of performance between AMPS and KAFKA
 
 Both server running on wsl (ubuntu 22)
