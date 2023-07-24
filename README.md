@@ -58,3 +58,5 @@ Second 1  | 265218 | 265772 | 269409 | 196735 | 248446
 2. In throughput KAFKA performs better.
 
 Note: AMPS server is the evaluation version provided by 60east.
+
+Install/Run amps and kafka service is in src/resource/notes.txt
