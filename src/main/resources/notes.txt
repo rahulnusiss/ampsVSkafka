@@ -10,19 +10,26 @@ $ ./AMPS-5.3.3.30-Release-Linux/bin/ampServer --sample-config > minimal.xml
 Run AMPS server:
 ../AMPS-5.3.3.30-Release-Linux/bin/ampServer minimal.xml
 
+Fix WSL (AMPS):
+Get IP address of wsl(ubuntu) using ifconfig. use this ipaddress as host in amps client to connect
+
 KAFKA:
 Download Kafka binary not source:
 (https://kafka.apache.org/downloads)
 
 Run kafka server on wsl ubuntu:
 cd <kafka extracted dir>
+
+run zookeeper
 bin/zookeeper-server-start.sh config/zookeeper.properties
 
+run kafka server ( see wsl fix)
 bin/kafka-server-start.sh config/server.properties
 
+create kafka topic
 bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic jsonKafka
 
-Fix wsl:
+Fix wsl(kafka):
 172.x
 Find the address of your WSL 2 network:
 
@@ -45,6 +52,9 @@ https://www.geeksforgeeks.org/how-to-install-and-run-apache-kafka-on-windows/
 Create topic: On cmd windows
 kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic jsonKafka
 
+Client:
+Kafka and amps client is in pom.xml
+
 
 When kafka subscriber connects should see this group name
 [2023-07-23 19:02:25,559] INFO [GroupCoordinator 0]: Member consumer-test-consumer-group-1-bc4d3066-74a1-4579-bda5-a0243c4057be in group test-consumer-group has failed, removing it from the group (kafka.coordinator.group.GroupCoordinator)
@@ -55,3 +65,4 @@ When kafka subscriber connects should see this group name
 [2023-07-23 19:03:10,999] INFO [GroupCoordinator 0]: Preparing to rebalance group test-consumer-group in state PreparingRebalance with old generation 4 (__consumer_offsets-31) (reason: Adding new member consumer-test-consumer-group-1-64a00717-b3b7-42e0-b6c9-9b062ea48f5d with group instance id None; client reason: not provided) (kafka.coordinator.group.GroupCoordinator)
 [2023-07-23 19:03:11,006] INFO [GroupCoordinator 0]: Stabilized group test-consumer-group generation 5 (__consumer_offsets-31) with 1 members (kafka.coordinator.group.GroupCoordinator)
 [2023-07-23 19:03:11,028] INFO [GroupCoordinator 0]: Assignment received from leader consumer-test-consumer-group-1-64a00717-b3b7-42e0-b6c9-9b062ea48f5d for group test-consumer-group for generation 5. The group has 1 members, 0 of which are static. (kafka.coordinator.group.GroupCoordinator)
+

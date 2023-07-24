@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AMPSOrderSubscriberTest {
+public class AMPSOrderLatencySubscriberTest {
 
     List<String> messageList = new ArrayList<>();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -24,39 +24,33 @@ public class AMPSOrderSubscriberTest {
             //c.connect("tcp://172.20.162.173:9007/amps/binary");
             c.logon();
 
-
             // Subscribe
             MessageStream ms = c.subscribe(AMPSOrderPublisher.AMPS_TOPIC);
-
+            long sum = 0;
             int count = 0;
-            int prevCount = 0;
-
-            long prevTime = 0;
-            long currTime = System.currentTimeMillis();
 
             while (ms.hasNext()) {
-                long runningTime = System.currentTimeMillis();
-                if ( runningTime - currTime > TimeCheck.RATE_TIME_WINDOW) {
-                    prevTime = currTime;
-                    currTime = runningTime;
-                    System.out.println("No of messages in this second : " + count);
-                    count = 0;
-                }
                 Message m = ms.next();
-                //String data = m.getData();
-                //messageList.add(data);
-                //System.out.println("Sub : " + data);
+                OrderMessage orderMessage = objectMapper.readValue(m.getData(), OrderMessage.class);
+                long currTime = System.currentTimeMillis();
+                long msgTime = orderMessage.getTimestamp();
+                sum += (currTime-msgTime);
                 count ++;
+                if (count == OrderMessage.NUM_MESSAGES) {
+                    break;
+                }
             }
 
-//            for (String msgJson : messageList) {
-//                System.out.println("Subscribed : " + msgJson);
-//            }
-
+            double avgLatency = (sum/OrderMessage.NUM_MESSAGES);
+            System.out.println("AMPS Avg latency : " + avgLatency);
 
         } catch (AMPSException e) {
             e.printStackTrace();
-        }  finally
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } finally
         {
             c.close();
         }

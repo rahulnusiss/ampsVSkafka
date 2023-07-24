@@ -1,3 +1,4 @@
+import com.crankuptheamps.client.Message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.*;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class KafkaOrderSubscriberTest {
+public class KafkaOrderLatencySubscriberTest {
 
     List<String> messageList = new ArrayList<>();
 
@@ -34,39 +35,30 @@ public class KafkaOrderSubscriberTest {
             consumer.subscribe(Arrays.asList(topicName));
             Duration duration = Duration.ofMillis(100);
 
-            long i = 0;
-
+            long sum = 0;
             int count = 0;
-            int prevCount = 0;
 
-            long prevTime = 0;
-            long currTime = System.currentTimeMillis();
 
             // Start consuming messages
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(duration);
                 for (ConsumerRecord<String, String> record : records) {
-                    long runningTime = System.currentTimeMillis();
-                    if ( runningTime - currTime > TimeCheck.RATE_TIME_WINDOW) {
-                        prevTime = currTime;
-                        currTime = runningTime;
-                        System.out.println("No of messages in this second : " + count);
-                        count = 0;
-                    }
                     String value = record.value();
-                    // Use the Java object as needed
-                    //System.out.println("Deserialized Object: " + record.value());
-                    i++;
+                    OrderMessage orderMessage = objectMapper.readValue(value, OrderMessage.class);
+                    long currTime = System.currentTimeMillis();
+                    long msgTime = orderMessage.getTimestamp();
+                    sum += (currTime-msgTime);
                     count ++;
                 }
-//                if (OrderMessage.NUM_MESSAGES == i ) {
-//                    break;
-//                }
+                if (OrderMessage.NUM_MESSAGES == count ) {
+                    break;
+                }
             }
 
-//            for (String msgJson : messageList) {
-//                System.out.print("Subscribed: " + msgJson);
-//            }
+            double avgLatency = (sum/OrderMessage.NUM_MESSAGES);
+            System.out.println("Kafka Avg latency : " + avgLatency);
+
+
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
