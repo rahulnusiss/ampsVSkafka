@@ -12,6 +12,8 @@ public class KafkaOrderSubscriberTest {
 
     List<String> messageList = new ArrayList<>();
 
+    private final static String TEST_MESSAGE = "No of messages in this second : ";
+
     @Test
     public void kafkaSubscriber() {
         String topicName = KafkaOrderPublisher.KAFKA_TOPIC_NAME;
@@ -32,7 +34,7 @@ public class KafkaOrderSubscriberTest {
         try {
             // Subscribe to the topic
             consumer.subscribe(Arrays.asList(topicName));
-            Duration duration = Duration.ofMillis(100);
+            Duration duration = Duration.ofNanos(1);
 
             long i = 0;
 
@@ -44,24 +46,23 @@ public class KafkaOrderSubscriberTest {
 
             // Start consuming messages
             while (true) {
+                long runningTime = System.currentTimeMillis();
+                if ( runningTime - currTime > TimeCheck.RATE_TIME_WINDOW) {
+                    prevTime = currTime;
+                    currTime = runningTime;
+                    System.out.println(TEST_MESSAGE + count);
+                    count = 0;
+                }
                 ConsumerRecords<String, String> records = consumer.poll(duration);
+
                 for (ConsumerRecord<String, String> record : records) {
-                    long runningTime = System.currentTimeMillis();
-                    if ( runningTime - currTime > TimeCheck.RATE_TIME_WINDOW) {
-                        prevTime = currTime;
-                        currTime = runningTime;
-                        System.out.println("No of messages in this second : " + count);
-                        count = 0;
-                    }
                     String value = record.value();
-                    // Use the Java object as needed
-                    //System.out.println("Deserialized Object: " + record.value());
                     i++;
                     count ++;
                 }
-//                if (OrderMessage.NUM_MESSAGES == i ) {
-//                    break;
-//                }
+                if (OrderMessage.NUM_MESSAGES == i ) {
+                    break;
+                }
             }
 
 //            for (String msgJson : messageList) {

@@ -17,6 +17,8 @@ public class AMPSOrderSubscriberTest {
 
     Client c = new Client("subscriber");
 
+    private final static String TEST_MESSAGE = "No of messages in this second : ";
+
     @Test
     public void subscribe () {
         try {
@@ -39,7 +41,7 @@ public class AMPSOrderSubscriberTest {
                 if ( runningTime - currTime > TimeCheck.RATE_TIME_WINDOW) {
                     prevTime = currTime;
                     currTime = runningTime;
-                    System.out.println("No of messages in this second : " + count);
+                    System.out.println(TEST_MESSAGE + count);
                     count = 0;
                 }
                 Message m = ms.next();
