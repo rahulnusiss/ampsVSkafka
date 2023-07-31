@@ -12,6 +12,8 @@ Results below
 
 
 **Throughput**:
+
+
 ![Screenshot](src/main/resources/Throughput.jpg)
 
 
